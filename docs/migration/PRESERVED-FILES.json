@@ -1,0 +1,379 @@
+{
+  "source_commit": "710e5d33369cba4fb9468cd24fea0fe844a0219d",
+  "allowed_change": "Only import relocation and gofmt; all runtime/test bodies and fixtures preserved.",
+  "files": [
+    {
+      "source_path": "internal/peerversion/version.go",
+      "path": "peerversion/version.go",
+      "sha256": "eba3a70af92bd7c53ca78422fc96b6b223c1cd81eca72a09430499a042982d2d",
+      "git_blob": "4026bc9e7e5b20ca11ffe6b8fdab54714960ecae",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "internal/peerversion/version_test.go",
+      "path": "peerversion/version_test.go",
+      "sha256": "10e619661cebe9dd7ac3c34e9d60a57ecf76cd48b1334cc501499968a1817aee",
+      "git_blob": "8e04c0a6a2cb608ae3d47c502793248538d88a93",
+      "mode": "0o664",
+      "tests": [
+        "TestResolvePublicVersionAndNativeEscape",
+        "TestResolveKeepsPrivateAndNonExactArguments"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "internal/testsocket/directory.go",
+      "path": "testsocket/directory.go",
+      "sha256": "373cdb0e9219c4235ff88dc11a30987bec1725939a6e02df58087adf00ce74c0",
+      "git_blob": "9268dbbaf3b13ffbeb8efc4b5eb9c5befb350bd8",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "internal/testsocket/directory_test.go",
+      "path": "testsocket/directory_test.go",
+      "sha256": "6e40eed060759a1eaf1cac5e552bed9113e5e5e28e0132e597ce16a741e696dc",
+      "git_blob": "bb34848ac0b2c594ec75ad56ddc338e4b714f260",
+      "mode": "0o664",
+      "tests": [
+        "TestDirectoryUsesDefaultSessionSocketParent",
+        "TestDirectoryResolvesSymlinkBeforeBindingSocket"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "scripts/cleanup-legacy/inventory.go",
+      "path": "scripts/cleanup-legacy/inventory.go",
+      "sha256": "df9433da5b355b42e5d407966e85803c87b25a7d5ba40d61d914b77a9a1837d6",
+      "git_blob": "f8fe397225380ac03bd62ac8eb7443fe94218e83",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "scripts/cleanup-legacy/main.go",
+      "path": "scripts/cleanup-legacy/main.go",
+      "sha256": "b427e8052bac1eeb3c1e9513746ee8ad7d0e1754fd8c25d8b6f1405de2ee4788",
+      "git_blob": "4525700fe2281a6b3e7526fba5dafa368dc391d6",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "scripts/cleanup-legacy/main_test.go",
+      "path": "scripts/cleanup-legacy/main_test.go",
+      "sha256": "4bae5028687ea87ef06dd8288ea4e31316d3c4ace7cf04ef971823e27e02d32a",
+      "git_blob": "c1c1a288144be064669efd383652f2d23d0ea762",
+      "mode": "0o664",
+      "tests": [
+        "TestQuarantinePreservesCurrentAliasAndLegacyTarget",
+        "TestConfigEditPreservesSymlinkConcurrentNativeChangesAndBackup",
+        "TestRejectIndirectParentAndReplacedAlias",
+        "TestNativeMCPRemovalIsOwnershipCheckedAndExact",
+        "TestGrokCleanupUsesNativeInstalledRepository"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "scripts/cleanup-legacy/review_boundary_test.go",
+      "path": "scripts/cleanup-legacy/review_boundary_test.go",
+      "sha256": "3b3f0a71481b1915ad2bc8529c9db8652791b14a745db47493d3830fdcca1151",
+      "git_blob": "ad687776e75ef199197a29554a82532bdfb3594d",
+      "mode": "0o664",
+      "tests": [
+        "TestReviewNativeRemovalRejectsConfigOutsideHome",
+        "TestReviewClaudeMixedScopesRefuseBeforePlan",
+        "TestReviewServiceOwnershipRequiresExecutableNotComment"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/endpoint.go",
+      "path": "host/endpoint.go",
+      "sha256": "dada1a15bdf425e18e844d67e609b446d22622d5ca7c81b24aeb23a9a2fca832",
+      "git_blob": "41c9766efc10dbfabf3719c8082c08539d746aa1",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/endpoint_test.go",
+      "path": "host/endpoint_test.go",
+      "sha256": "9ec9fe16cc432a6e2feda44a65dcf7086fd58117afc84fae4e7e7f26cffa2a9e",
+      "git_blob": "299f437249ad46a867d8419a001acac6ae238a45",
+      "mode": "0o664",
+      "tests": [
+        "TestPrivateEndpointBridgeCancel",
+        "TestPrivateEndpointReplacesStalePath"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/handoff.go",
+      "path": "host/handoff.go",
+      "sha256": "8385aa6586d3c66a21220ea360e94b51191a9c221e217a929fe9628155026a92",
+      "git_blob": "56218b2864778817c2ff2b060e8f2c85c72bf103",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/handoff_test.go",
+      "path": "host/handoff_test.go",
+      "sha256": "eb32e0ecab777c3dba61957283bc2682f69d59c73b39f1f0f2377761d404a183",
+      "git_blob": "e24850651da06964cd368d646985a1d79122ab0d",
+      "mode": "0o664",
+      "tests": [
+        "TestHandoffDeliveryAndQueueCommit",
+        "TestHandoffFailedCreationKeepsFullQueue",
+        "TestHandoffFailedCreationRestoresPendingDelivery",
+        "TestHandoffFailedCreationPreservesAdmissionOrder",
+        "TestHandoffClaimAndFinish",
+        "TestHandoffClaimableDeliveryReportsQueuedAcrossTerminal",
+        "TestHandoffSDKInterruptCrossings"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/launch.go",
+      "path": "host/launch.go",
+      "sha256": "02c82ac348716cab696449539804c754e0b082302f6c652bcd54cfdb3161c8f9",
+      "git_blob": "0a1566c99ac1b5ec2c8822e63783d085e505f1da",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/launch_test.go",
+      "path": "host/launch_test.go",
+      "sha256": "266be8c8599bab982a46a69652f46e1433558ba89b966db1f25bdeac8700dff4",
+      "git_blob": "0f2e983a3ba59bb3971dd1807ff546b54940b915",
+      "mode": "0o664",
+      "tests": [
+        "TestLaneModeUsesTokenPresence",
+        "TestLaunchTokenDigestLength",
+        "TestInteractivePlan",
+        "TestInteractivePlanErrors",
+        "TestClassifiedInteractivePlanDefersProjectionErrors",
+        "TestBuildArgumentsTable",
+        "TestChildOwnershipTable",
+        "TestOwnedChildHelper",
+        "TestChildCloseIgnoresStoppedProcessNoise",
+        "TestChildOutputDrainsAfterExit"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/lock.go",
+      "path": "host/lock.go",
+      "sha256": "84159d31dc79d3a506d532e35cbe1cfdf99ea5e74784bacbff84221c6c0e5d12",
+      "git_blob": "9e31828c1ef4e02cd36d66a6f71705a035903fed",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/lock_test.go",
+      "path": "host/lock_test.go",
+      "sha256": "8a252811f328812037f66403e7735716f4806ac4ef420734127a93561dc30d97",
+      "git_blob": "1e2e1053c527451965954653bc8a0b563db81c5b",
+      "mode": "0o664",
+      "tests": [
+        "TestSessionLockStaleFileAndContention",
+        "TestSessionLockRenamePreservesClaim",
+        "TestSessionLockOrderlyCloseAllowsResume",
+        "TestSessionLockRenameRecoversCrashStaleTarget",
+        "TestSessionLockRenameRetriesInodeMismatch",
+        "TestSessionLockRenamePreservesRecreatedTarget",
+        "TestSessionLockRenameDoesNotReplaceHolder"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/not_running.go",
+      "path": "host/not_running.go",
+      "sha256": "65dd0e7a37acec2da346627869309af268d6c5b68b5452a586d5bf1e240e9f5d",
+      "git_blob": "e62a0158d4f28d01f3c21183fe1e5022eb810482",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/render.go",
+      "path": "host/render.go",
+      "sha256": "5825cf7f4f178393f1c424a647fe716a236df65484ff00456684f7c75110a4bf",
+      "git_blob": "df5de0b77e76d0c5b69395c486fb1779ec6ae3f5",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/render_test.go",
+      "path": "host/render_test.go",
+      "sha256": "afe8e1a16480c62217049e42e209c1bd7f8bf7174b34232179bc994dcc637d22",
+      "git_blob": "cd8a200676d5eda8577d2cd7696928939218a2ea",
+      "mode": "0o664",
+      "tests": [
+        "TestRendererMatchesC5Fixture"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/host/testdata/native-message-envelope.json",
+      "path": "host/testdata/native-message-envelope.json",
+      "sha256": "3b6fd04eb1d829f0e5313e350e624ebc27cd2e1e86286a68e395dd731e6d46bf",
+      "git_blob": "3b16a853d38d0aa45d874a038498b950000fb24b",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/SESSIONBUS.md",
+      "path": "mcp/SESSIONBUS.md",
+      "sha256": "ff6fe51ed21e1350845bd111fc6686774e1529409c80da7eff43b0987ba621e9",
+      "git_blob": "58d04d81c5da4d51721b43db2170c5b6804cca5e",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/lane.go",
+      "path": "mcp/lane.go",
+      "sha256": "8b04b2461decde1b1ae0d82bdc2ec78f2f7565cbbcd958c3476bbb1f59a444f5",
+      "git_blob": "a8886f4611d8914928405c78f159be5a2bac2010",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/lane_test.go",
+      "path": "mcp/lane_test.go",
+      "sha256": "e7445ffaed03a51edd3e40439f70da2d407097f2b5af36c3542f57522298a139",
+      "git_blob": "66dc1f002f96ac1333adc06eb8474fa6bace6311",
+      "mode": "0o664",
+      "tests": [
+        "TestLaneBackendCrossingCallsAndErrors",
+        "TestLaneBackendRequiresSocket",
+        "TestPrivateActionKeepsCallerInResidentServer",
+        "TestPrivateActionPreservesWorkerCollectionError",
+        "TestServeLaneJoinsAdmittedActions"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/self_info_test.go",
+      "path": "mcp/self_info_test.go",
+      "sha256": "1d74e4cc9cacd08dc3423cb8b8a1164159c2fd38cb6402421f31617ab15d7e06",
+      "git_blob": "073130230403e5ba252163908967176ac1eee19a",
+      "mode": "0o664",
+      "tests": [
+        "TestListSelfInfoSurvivesCallerAndNativeToolResponse"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/send_test.go",
+      "path": "mcp/send_test.go",
+      "sha256": "fc02016425eb1383b3d084f83f9edbca5e226c4448ff52de2ccb6bc68725177c",
+      "git_blob": "60802795e39d7ab9c8e583307549e90a9fa0b94d",
+      "mode": "0o664",
+      "tests": [
+        "TestSendRejectsUnknownSummaryBeforeDispatch",
+        "TestAdvertisedArgumentsMatchPublicActionFieldUnion"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/server.go",
+      "path": "mcp/server.go",
+      "sha256": "edf6a6e468b1be8296f285a0dac29bfb8c753792b76f90397bb0602267e264d3",
+      "git_blob": "f0ed6b8c6e849a20c599963c4943eb407c1df88e",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/server_test.go",
+      "path": "mcp/server_test.go",
+      "sha256": "21b0d44c7d38cc8c26fda0073524b84426a8ecc2ea3ad5a52dcc8e4c484cfa0c",
+      "git_blob": "d3e17072971e004f26405fb06927b1e4f23a4993",
+      "mode": "0o664",
+      "tests": [
+        "TestServerMethods",
+        "TestInvalidRequests",
+        "TestToolArgumentsMustBeObject",
+        "TestServerUsesBackendCallerAfterPrepare",
+        "TestServerUsesStatelessActionBackend",
+        "TestServerReturnsOutputFailure",
+        "TestServerCancelWithStoppedOutput"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/sessionbus.go",
+      "path": "mcp/sessionbus.go",
+      "sha256": "f7fe0a847a5fb58b005c61c86d97f83010866b11d407b458421ce63605c49cb7",
+      "git_blob": "926ed7bdd5f377158fcf6292b8f95fe1ff46203d",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/sessionbus_bounds_test.go",
+      "path": "mcp/sessionbus_bounds_test.go",
+      "sha256": "e59d02ed325197568fa9c9daa7c1f72b197b69b1b7074000f9ba8b577c2402c5",
+      "git_blob": "3fba5851239e464f4b47f33d97f936f969cf7492",
+      "mode": "0o664",
+      "tests": [
+        "TestMCPBlockedResponsesDoNotHoldEOF",
+        "TestMCPBlockedOSPipeWriteJoinsOnEOF",
+        "TestMCPInitializedOnlyAfterSuccessfulWrite",
+        "TestMCPResponseWorkAndRetainedInputLimits",
+        "TestMCPReturnedPayloadBudgetStopsBlockedResponses",
+        "TestMCPFrameAndEscapedResultBounds",
+        "TestMCPCompletedActionDoesNotWriteAfterEOF",
+        "TestMCPResponseReservationsReleaseAndIDsCanBeReused",
+        "TestMCPOversizedPayloadStopsWithoutOutput",
+        "TestMCPCancelledCallsReleaseWorkWithoutReplies"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/sessionbus_test.go",
+      "path": "mcp/sessionbus_test.go",
+      "sha256": "411caa0d710203944f75bd83002f11a36f929333beb854e5bbc4ae4fb9ac62ed",
+      "git_blob": "2286a88aed2a5952ce07ba65174d990aae401819",
+      "mode": "0o664",
+      "tests": [
+        "TestSessionbusNativeReportsAreExplicitAndHidden",
+        "TestSessionbusReportCannotShadowPublicTool",
+        "TestSessionbusMetadataIsPerNativeRequest",
+        "TestInactiveMCPStaysUntilEOFAndAdvertisesNothing"
+      ],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/sessionbus_tools.go",
+      "path": "mcp/sessionbus_tools.go",
+      "sha256": "7c553b1ad6f8abf3c3da72417d1bf771b98cc31614cbe96aa2b9564da27f5924",
+      "git_blob": "2113cf19522f661bfec41f9e578ac23772455cd6",
+      "mode": "0o664",
+      "tests": [],
+      "git_mode": "100644"
+    },
+    {
+      "source_path": "wrappers/mcp/trace_policy_test.go",
+      "path": "mcp/trace_policy_test.go",
+      "sha256": "98f71c86987892c98f4dcdb02fd2c4cc1cf96f024b60328ac342281334f30875",
+      "git_blob": "c34073b1d148cc08d6cfd69758784dfd9cca6ec8",
+      "mode": "0o664",
+      "tests": [
+        "TestSpawnResultTraceSurvivesSDKAndMCP"
+      ],
+      "git_mode": "100644"
+    }
+  ]
+}
