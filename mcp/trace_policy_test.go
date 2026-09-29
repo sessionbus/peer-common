@@ -12,7 +12,7 @@ func TestSpawnResultTraceSurvivesSDKAndMCP(t *testing.T) {
 	for _, mode := range []string{"", "off", "events", "content"} {
 		for _, action := range []string{"fresh", "resume"} {
 			t.Run(action+"/"+mode, func(t *testing.T) {
-				policy := map[string]any{"persistent": false, "auto_close_ms": float64(60000), "idle_message": "run", "notify": true}
+				policy := map[string]any{"persistent": false, "auto_close_ms": float64(60000), "notify": true}
 				if mode != "" {
 					policy["trace"] = mode
 				}
