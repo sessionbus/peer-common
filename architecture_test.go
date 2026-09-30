@@ -15,7 +15,7 @@ import (
 )
 
 func TestSharedRepositoryBoundary(t *testing.T) {
-	allowed := map[string]bool{".git": true, ".github": true, ".forgejo": true, ".gitignore": true, ".golangci.yml": true, "LICENSE": true, "README.md": true, "architecture_test.go": true, "docs": true, "go.mod": true, "go.sum": true, "host": true, "mcp": true, "peerversion": true, "testsocket": true, "scripts": true}
+	allowed := map[string]bool{".git": true, ".github": true, ".forgejo": true, ".gitignore": true, ".golangci.yml": true, "AGENTS.md": true, "LICENSE": true, "README.md": true, "architecture_test.go": true, "docs": true, "go.mod": true, "go.sum": true, "host": true, "mcp": true, "peerversion": true, "testsocket": true, "scripts": true}
 	entries, err := os.ReadDir(".")
 	if err != nil {
 		t.Fatal(err)
