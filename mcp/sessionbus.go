@@ -22,6 +22,20 @@ type SessionbusOwner interface {
 	End()
 }
 
+// PrivateRequestOwner optionally handles unadvertised methods on an enabled
+// connection. Params is a normalized JSON object. Unknown methods must return
+// handled=false without side effects; admitted work must honor ctx cancellation.
+// No authenticated-caller identity is supplied: the owner must validate and
+// authorize the exact binding before any side effect. On shutdown the connection
+// context is cancelled and End is called before in-flight callbacks are joined;
+// End must tolerate settling callbacks and not wait for the serving loop to join.
+// A nil result is encoded as {}.
+// Results must be valid JSON within the public response limits. ProtocolError
+// preserves code/message/data; other errors are encoded as -32603.
+type PrivateRequestOwner interface {
+	PrivateRequest(context.Context, string, json.RawMessage) (result json.RawMessage, handled bool, err error)
+}
+
 // ReportHandler is an optional native hook capability, never model-advertised.
 // Native validation and identity state stay in the product callback.
 type ReportHandler struct {
@@ -66,7 +80,7 @@ func toolResult(value json.RawMessage, err error) any {
 }
 
 // Serve keeps native reports, cancellation and EOF independent of pending public
-// calls. Public request IDs live only until their action settles; responses are
+// calls. Admitted request IDs live only until their callback settles; responses are
 // connection-scoped and are discarded on EOF. Serving owns input and closable
 // output; nonclosable blocking output is unsupported.
 func ServeSessionbus(owner SessionbusOwner, input io.ReadCloser, output io.Writer, report ReportHandler) error {
@@ -222,7 +236,7 @@ func serveSessionbus(owner SessionbusOwner, input io.ReadCloser, output io.Write
 			launch(work, func() { failure(id, code, message) })
 		}
 	}
-	toolReply := func(work *int, id json.RawMessage, value json.RawMessage, err error) {
+	chargeReply := func(work *int, value json.RawMessage, err error) bool {
 		// Reserve returned data before it can wait behind another response write.
 		// Conservative double charging covers the raw result and its text copy;
 		// error JSON can escape each source byte sixfold before the text copy.
@@ -231,21 +245,45 @@ func serveSessionbus(owner SessionbusOwner, input io.ReadCloser, output io.Write
 			size = len(err.Error())
 			var rpcError *kit.ProtocolError
 			if errors.As(err, &rpcError) {
-				size += len(rpcError.Data)
+				size = max(size, len(rpcError.Message)) + len(rpcError.Data)
 			}
 			if size > protocol.MaxFrameBytes {
 				stop()
-				return
+				return false
 			}
 			size = 6*size + 128
 		} else if size > protocol.MaxFrameBytes {
 			stop()
+			return false
+		}
+		return charge(work, 2*size)
+	}
+	toolReply := func(work *int, id json.RawMessage, value json.RawMessage, err error) {
+		if chargeReply(work, value, err) {
+			respond(id, toolResult(value, err))
+		}
+	}
+	privateReply := func(work *int, id json.RawMessage, value json.RawMessage, err error) {
+		if !chargeReply(work, value, err) {
 			return
 		}
-		if !charge(work, 2*size) {
+		if err != nil {
+			failed := errorFailure(err)
+			if len(failed.Data) != 0 && !json.Valid(failed.Data) {
+				failure(id, -32603, "Private request returned invalid error data")
+				return
+			}
+			write(map[string]any{"jsonrpc": "2.0", "id": id, "error": failed})
 			return
 		}
-		respond(id, toolResult(value, err))
+		if value == nil {
+			value = json.RawMessage(`{}`)
+		}
+		if !json.Valid(value) {
+			failure(id, -32603, "Private request returned invalid JSON")
+			return
+		}
+		respond(id, value)
 	}
 	reader := bufio.NewReader(input)
 	for ctx.Err() == nil {
@@ -383,7 +421,37 @@ func serveSessionbus(owner SessionbusOwner, input io.ReadCloser, output io.Write
 				})
 			}
 		default:
-			launch(work, func() { failure(id, -32601, "Method not found") })
+			private, ok := owner.(PrivateRequestOwner)
+			if !enabled || !ok {
+				launch(work, func() { failure(id, -32601, "Method not found") })
+				break
+			}
+			state.Lock()
+			_, duplicate := pending[key]
+			state.Unlock()
+			if duplicate {
+				launch(work, func() { failure(id, -32600, "Request ID already in flight") })
+				break
+			}
+			callCtx, abort := context.WithCancel(ctx)
+			state.Lock()
+			pending[key] = abort
+			state.Unlock()
+			launch(work, func() {
+				defer abort()
+				value, handled, err := private.PrivateRequest(callCtx, method, p)
+				state.Lock()
+				delete(pending, key)
+				state.Unlock()
+				if err != nil && callCtx.Err() != nil && errors.Is(err, callCtx.Err()) {
+					return
+				}
+				if !handled {
+					failure(id, -32601, "Method not found")
+					return
+				}
+				privateReply(work, id, value, err)
+			})
 		}
 		if readErr != nil {
 			break
