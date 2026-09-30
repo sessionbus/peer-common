@@ -22,6 +22,11 @@ type privateTestOwner struct {
 	request func(context.Context, string, json.RawMessage) (json.RawMessage, bool, error)
 }
 
+type shortenedProtocolError struct{ cause *kit.ProtocolError }
+
+func (e shortenedProtocolError) Error() string { return "short" }
+func (e shortenedProtocolError) Unwrap() error { return e.cause }
+
 func (o *privateTestOwner) PrivateRequest(ctx context.Context, method string, params json.RawMessage) (json.RawMessage, bool, error) {
 	return o.request(ctx, method, params)
 }
@@ -377,4 +382,81 @@ func TestSessionbusPrivateRetainedResponsesStopAndJoinBlockedWrite(t *testing.T)
 	awaitBounds(t, owner.ended)
 	awaitBounds(t, done)
 	awaitBounds(t, sent)
+}
+
+func TestSessionbusProtocolErrorBudgetUsesEmittedFields(t *testing.T) {
+	for _, path := range []string{"public", "private"} {
+		for _, kind := range []string{"message", "data", "combined"} {
+			t.Run(path+"/"+kind, func(t *testing.T) {
+				inner := &kit.ProtocolError{Code: -32004}
+				switch kind {
+				case "message":
+					inner.Message = strings.Repeat("x", protocol.MaxFrameBytes+1)
+				case "data":
+					inner.Data = json.RawMessage(`"` + strings.Repeat("x", protocol.MaxFrameBytes) + `"`)
+				case "combined":
+					inner.Message = strings.Repeat("x", protocol.MaxFrameBytes/2)
+					inner.Data = json.RawMessage(`"` + strings.Repeat("x", protocol.MaxFrameBytes/2) + `"`)
+				}
+				failure := shortenedProtocolError{inner}
+				base := newBoundsOwner()
+				base.action = func(context.Context) (json.RawMessage, error) { return nil, failure }
+				var owner SessionbusOwner = base
+				method, params := "tools/call", map[string]any{"name": "sessionbus", "arguments": map[string]any{"action": "list", "arguments": map[string]any{}}}
+				if path == "private" {
+					method, params = "sessionbus/private", nil
+					owner = &privateTestOwner{base, func(context.Context, string, json.RawMessage) (json.RawMessage, bool, error) {
+						return nil, true, failure
+					}}
+				}
+				f := newPrivateFixture(t, owner, true)
+				f.sendRequest(t, 1, method, params)
+				if _, err := f.receive.Read(make([]byte, 1)); !errors.Is(err, io.EOF) {
+					t.Fatal("shortened outer error bypassed returned-data limit", err)
+				}
+				awaitBounds(t, f.done)
+			})
+		}
+	}
+}
+
+func TestSessionbusWrappedProtocolErrorsShareRetainedBudget(t *testing.T) {
+	for _, path := range []string{"public", "private"} {
+		t.Run(path, func(t *testing.T) {
+			input, send := io.Pipe()
+			out, receive := net.Pipe()
+			t.Cleanup(func() { _ = send.Close(); _ = receive.Close() })
+			observed := &observedMCPOutput{WriteCloser: out, entered: make(chan struct{})}
+			failure := shortenedProtocolError{&kit.ProtocolError{Code: -32004, Message: strings.Repeat("x", protocol.MaxFrameBytes-1)}}
+			base := newBoundsOwner()
+			base.action = func(context.Context) (json.RawMessage, error) { return nil, failure }
+			var owner SessionbusOwner = base
+			method, params := "tools/call", map[string]any{"name": "sessionbus", "arguments": map[string]any{"action": "list", "arguments": map[string]any{}}}
+			if path == "private" {
+				method, params = "sessionbus/private", nil
+				owner = &privateTestOwner{base, func(context.Context, string, json.RawMessage) (json.RawMessage, bool, error) {
+					return nil, true, failure
+				}}
+			}
+			done := make(chan struct{})
+			go func() { defer close(done); _ = ServeSessionbus(owner, input, observed, ReportHandler{}) }()
+			encoder := json.NewEncoder(send)
+			if err := encoder.Encode(map[string]any{"jsonrpc": "2.0", "id": 1, "method": method, "params": params}); err != nil {
+				t.Fatal(err)
+			}
+			awaitBounds(t, observed.entered)
+			sent := make(chan struct{})
+			go func() {
+				defer close(sent)
+				for id := 2; id <= 32; id++ {
+					if err := encoder.Encode(map[string]any{"jsonrpc": "2.0", "id": id, "method": method, "params": params}); err != nil {
+						return
+					}
+				}
+			}()
+			awaitBounds(t, base.ended)
+			awaitBounds(t, done)
+			awaitBounds(t, sent)
+		})
+	}
 }

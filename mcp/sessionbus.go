@@ -25,7 +25,11 @@ type SessionbusOwner interface {
 // PrivateRequestOwner optionally handles unadvertised methods on an enabled
 // connection. Params is a normalized JSON object. Unknown methods must return
 // handled=false without side effects; admitted work must honor ctx cancellation.
-// Serving joins callbacks on shutdown. A nil result is encoded as {}.
+// No authenticated-caller identity is supplied: the owner must validate and
+// authorize the exact binding before any side effect. On shutdown the connection
+// context is cancelled and End is called before in-flight callbacks are joined;
+// End must tolerate settling callbacks and not wait for the serving loop to join.
+// A nil result is encoded as {}.
 // Results must be valid JSON within the public response limits. ProtocolError
 // preserves code/message/data; other errors are encoded as -32603.
 type PrivateRequestOwner interface {
@@ -241,7 +245,7 @@ func serveSessionbus(owner SessionbusOwner, input io.ReadCloser, output io.Write
 			size = len(err.Error())
 			var rpcError *kit.ProtocolError
 			if errors.As(err, &rpcError) {
-				size += len(rpcError.Data)
+				size = max(size, len(rpcError.Message)) + len(rpcError.Data)
 			}
 			if size > protocol.MaxFrameBytes {
 				stop()
