@@ -41,18 +41,30 @@ func TestAdvertisedArgumentsMatchPublicActionFieldUnion(t *testing.T) {
 	if err := json.Unmarshal(protocol.SessionSchema, &schema); err != nil {
 		t.Fatal(err)
 	}
+	advertised := argumentSchema()
+	properties := advertised["properties"].(map[string]any)
 	expected := map[string]json.RawMessage{}
-	for _, name := range []string{"SessionListRequest", "MessageSendRequest", "LaneDescribeRequest", "LaneSpawnRequest", "TraceConfigureRequest", "TurnRunRequest", "WaitRequest", "RunRef", "TurnInterruptRequest", "SessionCloseRequest"} {
+	for _, name := range []string{"SessionListRequest", "MessageSendRequest", "LaneDescribeRequest", "LaneSpawnRequest", "TraceConfigureRequest", "TurnRunRequest", "WaitRequest", "RunRef", "TurnInterruptRequest", "SessionCloseRequest", "TransferOffer", "TransferRequest", "TransferTarget"} {
 		definition, ok := schema.Definitions[name]
 		if !ok {
 			t.Fatalf("missing kit definition %s", name)
 		}
+		// Check each definition before the union merge, so a later
+		// definition of the same field cannot mask an incompatible type.
 		for key, value := range definition.Properties {
+			property, ok := properties[key].(map[string]any)
+			if !ok {
+				t.Fatalf("kit field %s of %s is not advertised", key, name)
+			}
+			assertArgumentType(t, name+"."+key, property, value)
 			expected[key] = value
 		}
 	}
-	advertised := argumentSchema()
-	properties := advertised["properties"].(map[string]any)
+	// The SDK consumes these transfer tool fields locally; they never reach
+	// the wire, so no kit definition carries them.
+	expected["source"] = json.RawMessage(`{"type":"string"}`)
+	expected["destination"] = json.RawMessage(`{"type":"string"}`)
+	expected["overwrite"] = json.RawMessage(`{"type":"boolean"}`)
 	if advertised["additionalProperties"] != false || len(properties) != len(expected) {
 		t.Fatal("argument field set is not closed or differs from the kit")
 	}

@@ -25,6 +25,10 @@ wait: {session_id:string, run_id?:string, timeout_ms?:nonnegative integer}; non-
 ack: {session_id:string, run_id:string}; acknowledge the oldest terminal record: for state=done, first receive and use its result/outcome/native reason; for state=unavailable, first record/report its reason (there is no result). Both states must be acknowledged to advance the cursor. Never acknowledge running or infer an acknowledgeable record from an RPC error. Repeating an acknowledgment is idempotent, without returning the answer again. No skipping older records; unavailable does not claim a native terminal. Closing, auto-close or worker loss makes unacknowledged output unavailable; collection does not reset the retirement deadline.
 interrupt: {session_id:string}; acknowledgment is not terminal completion.
 close: {session_id:string, forget?:boolean}; forget: {session_id:string} closes with forget=true.
+transfer.offer: {target:string, source:string, name?:string}; offers the file at source on this machine to one session. name defaults to the file's base name.
+transfer.request: {target:string, what:string, destination:string, name?:string, overwrite?:boolean}; asks one session for the file described by what, to be written at destination on this machine. An existing destination is replaced only with overwrite:true.
+transfer.accept: {id:string, source:string} answers a request you received; {id:string, destination:string, overwrite?:boolean} accepts an offer you received.
+transfer.status: {id:string}; transfer.cancel: {id:string} cancels a transfer, or declines one you received. Offers, requests and each final result arrive as ordinary messages with the transfer id; a result's outcome is completed, failed, cancelled, expired or unknown. Relative paths are resolved against your working directory; files are read and written as your OS user, up to 1 GiB. A completed transfer was written in full with a matching SHA-256; unknown means the write may have happened and is not retried.
 No unlisted argument fields. Message and input strings have a 262144-character wire limit. Native policy can deny any public call.`
 
 func Tool() any {
@@ -39,13 +43,13 @@ func Tool() any {
 // required fields, addressing alternatives, limits, and policy combinations.
 func argumentSchema() map[string]any {
 	properties := map[string]any{}
-	for _, field := range []string{"session_id", "host", "message", "target", "group", "product", "name", "resume_session_id", "notify_target", "input", "run_id"} {
+	for _, field := range []string{"session_id", "host", "message", "target", "group", "product", "name", "resume_session_id", "notify_target", "input", "run_id", "what", "id", "source", "destination"} {
 		properties[field] = map[string]any{"type": "string"}
 	}
 	for _, field := range []string{"targets", "extra_groups"} {
 		properties[field] = map[string]any{"type": "array", "items": map[string]any{"type": "string"}}
 	}
-	for _, field := range []string{"persistent", "notify", "forget"} {
+	for _, field := range []string{"persistent", "notify", "forget", "overwrite"} {
 		properties[field] = map[string]any{"type": "boolean"}
 	}
 	for _, field := range []string{"auto_close_ms", "timeout_ms"} {
