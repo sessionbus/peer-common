@@ -37,7 +37,7 @@ func TestPublicSDKAndIndependentModuleBoundary(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, want := range []string{"module github.com/sessionbus/peer-common\n", "github.com/antst/sessionbus/bus/sdk/go v0.5.14\n"} {
+	for _, want := range []string{"module github.com/sessionbus/peer-common\n", "github.com/antst/sessionbus/bus/sdk/go v0.5.16\n"} {
 		if !bytes.Contains(data, []byte(want)) {
 			t.Fatalf("module missing %q", want)
 		}
